@@ -18,18 +18,18 @@ class authController {
         try {
             const errors = validationResult(req)
             if (!errors.isEmpty()) {
-                return res.status(400).json({message: "Ошибка при регистрации", errors})
+                return res.status(400).json({message: " ERROR DURING REGISTRATION ", errors})
             }
             const {username, password} = req.body;
             const candidate = await User.findOne({username})
             if (candidate) {
-                return res.status(400).json({message: "Пользователь с таким именем уже существует"})
+                return res.status(400).json({message: " USER WITH CURRENT NAME ALREADY EXISTS"})
             }
             const hashPassword = bcrypt.hashSync(password, 7);
             const userRole = await Role.findOne({value: "USER"})
             const user = new User({username, password: hashPassword, roles: [userRole.value]})
             await user.save()
-            return res.json({message: "Пользователь успешно зарегистрирован"})
+            return res.json({message: " USER REGISTREATED SUCCESFUULLY "})
         } catch (e) {
             console.log(e)
             res.status(400).json({message: 'Registration error'})
@@ -41,11 +41,11 @@ class authController {
             const {username, password} = req.body
             const user = await User.findOne({username})
             if (!user) {
-                return res.status(400).json({message: `Пользователь ${username} не найден`})
+                return res.status(400).json({message: `USER ${username} NOT FOUND `})
             }
             const validPassword = bcrypt.compareSync(password, user.password)
             if (!validPassword) {
-                return res.status(400).json({message: `Введен неверный пароль`})
+                return res.status(400).json({message: `ENTERED WRONG PASSWORD`})
             }
             const token = generateAccessToken(user._id, user.roles)
             return res.json({token})
